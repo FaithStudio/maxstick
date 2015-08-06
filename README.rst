@@ -26,9 +26,8 @@ it inside the 3ds Max python interpreter::
 Installation
 ------------
 
-To use the script inside 3ds Max easily you can define a simple macro-
-script that you can bind to a toolbar button or hotkey. Edit the
-following maxscript as needed, then copy and execute it inside 3ds Max::
+To use the script inside 3ds Max easily you can define a simple
+macroscript that you can bind to a toolbar button or hotkey. Edit the following maxscript as needed, then copy and execute it inside 3ds Max::
 
     macroscript maxstick_joystick_control
     category:"Buelter"
@@ -45,12 +44,10 @@ How to use
 - Select an object in 3ds Max, e.g. a camera.
 - Launch the joystick control using the supplied start.ms or the macro.
 
-Button 0 ('gun' button)::
+Button controls::
 
-    Pause/resume joystick control (blocks 3ds Max interface).
+    Button 0 ('gun' button) : Pause/resume control (blocks 3ds Max interface).
 
-Button 1 ('rocket' button)::
-
-    Stop joystick loop entirely to free the 3ds Max user interface.
+    Button 1 ('rocket' button) : Stop control to free the 3ds Max interface.
 
 Once stopped, you can restart it using start.ms again.
