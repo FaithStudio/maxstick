@@ -1,16 +1,3 @@
-"""Moves the currently selected object with a joystick.
-
-How to use
-----------
-
-- Make sure have a joystick connected (with throttle and z-rotation).
-- Select an object in 3ds Max, e.g. a camera.
-- Launch the joystick control using the supplied start.ms
-
-The first joystick button will toggle joystick control on/off, the
-second button stops it entirely.
-
-"""
 import os
 import sys
 
