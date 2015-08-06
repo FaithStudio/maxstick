@@ -1,9 +1,27 @@
+"""Moves the currently selected object with a joystick.
+
+How to use
+----------
+
+- Make sure have a joystick connected (with throttle and z-rotation).
+- Select an object in 3ds Max, e.g. a camera.
+- Launch the joystick control using the supplied start.ms
+
+The first joystick button will toggle joystick control on/off, the
+second button stops it entirely.
+
+"""
 import os
 import sys
 
+import MaxPlus
+
+
+thisfile = os.path.abspath(__file__)
+thisdir = os.path.dirname(thisfile)
+parentdir = os.path.dirname(thisdir)
+
 def _init_libs():
-    thisfile = os.path.abspath(__file__)
-    parentdir = os.path.dirname(os.path.dirname(thisfile))
     libsdir = os.path.join(parentdir, "libs")
     sys.path.append(libsdir)
 
@@ -11,83 +29,102 @@ _init_libs()
 
 import pyglet
 
-import MaxPlus
+
+mxs_templatefile = os.path.join(thisdir, "mxs_template.ms")
+mxs_template = None
+
+stick = None
+joystick_control_active = True
 
 
-def loop():
+def _get_joystick():
+    """Returns the first registered joystick."""
     sticks = pyglet.input.get_joysticks()
-    if not sticks:
-        print("ERROR: No joystick found.")
-        return
-
     stick = sticks[0]
+    return stick
 
-    def update_camera_transform(dt, *args, **kwargs):
-        mxs = (
-               "tm = $Camera001.transform\n"
 
-               # Joystick accelerate/deaccelerate.
-               "preTranslate tm [0, 0, {stick.z}]\n"
+def _get_mxs_template():
+    """Returns the maxscript template used to drive the object."""
+    with open(mxs_templatefile) as f:
+        return f.read()
 
-               # Joystick up and down.
-               "preRotate tm (eulerToQuat (eulerAngles {stick.y} 0 0))\n"
 
-               # Joystick left to right.
-               "preRotate tm (eulerToQuat (eulerAngles 0 0 ({stick.x} * -1) ))\n"
-
-               # Joystick rotate around itself.
-               "preRotate tm (eulerToQuat (eulerAngles 0 ({stick.rz} * -1) 0))\n"
-
-               "$Camera001.transform = tm\n"
-
-               "slidertime += 1\n"
-
-               # "windows.processPostedMessages()\n"
-              ).format(stick=stick)
-        # print(mxs)
+def _update_camera_transform(dt, *args, **kwargs):
+    """Fills out the maxscript template and executes it."""
+    if joystick_control_active:
+        mxs = mxs_template.format(stick=stick, t=1)
         MaxPlus.Core.EvalMAXScript(mxs)
         MaxPlus.ViewportManager.ForceCompleteRedraw()
 
-    pyglet.clock.schedule(update_camera_transform)
 
-    # Display a window so we can close the event loop.
-    # By default it will stop when all open windows are closed.
-    caption = "maxstick: Close me to stop the joystick."
-    dialogstyle = pyglet.window.Window.WINDOW_STYLE_DIALOG
-    window = pyglet.window.Window(300, 10, caption=caption, style=dialogstyle)
+def _register_handlers(stick):
+    """Adds event handlers to joystick buttons.
 
-    # @window.event
-    # def on_draw():
-    #     # s = stick
-    #     # print s.x, s.y, s.z, s.hat_x, s.hat_y
+    Button 0: Toggle joystick control.
+    Button 1: Exit event loop.
 
-    # def on_joybutton_press(joystick, button):
-    #     # on_draw()
-    #     # print("Pressed button: {button}".format(**locals()))
+    """
+    def on_joybutton_press(stick, button):
+        global joystick_control_active
+        if button == 0:
+            state = "on hold" if joystick_control_active else "active"
+            print("INFO: Joystick control {0}.".format(state))
+            if joystick_control_active:
+                stop_joystick_control()
+            else:
+                start_joystick_control()
+            joystick_control_active = not joystick_control_active
+        elif button == 1:
+            exit()
 
-    # def on_joybutton_release(joystick, button):
-    #     # on_draw()
-    #     # print("Released button: {button}".format(**locals()))
+    stick.on_joybutton_press = on_joybutton_press
 
-    # def on_joyaxis_motion(joystick, axis, value):
-    #     # on_draw()
-    #     # print("Motion on axis: {axis} with value: {value}".format(**locals()))
 
-    # def on_joyhat_motion(joystick, hat_x, hat_y):
-    #     # on_draw()
-    #     # print("Joyhat motion x: {hat_x}, y: {hat_y}".format(**locals()))
+def initialize():
+    """Setup for the joystick object and the maxscript template.
 
-    # stick.on_joybutton_press    = on_joybutton_press
-    # stick.on_joybutton_release  = on_joybutton_release
-    # stick.on_joyaxis_motion     = on_joyaxis_motion
-    # stick.on_joyhat_motion      = on_joyhat_motion
+    This can be called repeatedly, e.g. for initial setup and afterwards
+    when toggling the joystick control on/off.
+
+    """
+    global stick
+    try:
+        stick = _get_joystick()
+    except IndexError:
+        print("ERROR: No joystick found.")
+        exit()
+    _register_handlers(stick)
+
+    global mxs_template
+    mxs_template = _get_mxs_template()
+
+
+def start_joystick_control():
+    pyglet.clock.schedule(_update_camera_transform)
+
+
+def stop_joystick_control():
+    pyglet.clock.unschedule(_update_camera_transform)
+
+
+def exit():
+    """Shuts down the main loop."""
+    print("INFO: Shutting down joystick control.")
+    if stick:
+        stick.close()
+    pyglet.app.exit()
+
+
+def main():
+    """Launches the main pyglet.app loop."""
+    reload(pyglet)
+    initialize()
     stick.open()
-
-    print("Starting app...")
+    start_joystick_control()
+    print("INFO: Starting joystick control.")
     pyglet.app.run()
 
-loop()
 
-# """
-# python.executeFile @"C:\Users\Buelter\Google Drive\dev\maxstick\maxstick\__init__.py"
-# """
+if __name__ == '__main__':
+    main()
