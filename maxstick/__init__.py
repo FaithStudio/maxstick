@@ -3,19 +3,11 @@ import sys
 
 import MaxPlus
 
+thisdir = os.path.dirname(os.path.abspath(__file__))
+libsdir = os.path.join(thisdir, "libs")
 
-thisfile = os.path.abspath(__file__)
-thisdir = os.path.dirname(thisfile)
-parentdir = os.path.dirname(thisdir)
-
-def _init_libs():
-    libsdir = os.path.join(parentdir, "libs")
-    sys.path.append(libsdir)
-
-_init_libs()
-
+sys.path.append(libsdir)
 import pyglet
-
 
 mxs_templatefile = os.path.join(thisdir, "mxs_template.ms")
 mxs_template = None
