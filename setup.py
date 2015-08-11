@@ -2,7 +2,7 @@ import setuptools
 
 
 setuptools.setup(name="maxstick",
-                 version="0.2.3",
+                 version="0.2.5",
                  description="Control 3ds Max with a joystick.",
                  long_description=open("README.rst").read(),
                  author="Christoph Buelter",
