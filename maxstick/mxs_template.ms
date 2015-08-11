@@ -3,14 +3,15 @@
         local obj = selection[1]
         if obj != undefined then (
 
-            local accel = {stick.z}
-            local rot_x = {stick.y}
-            local rot_y = {stick.rz} * -1
-            local rot_z = {stick.x} * -1
+            global maxstick_accel = {stick.z} * -1
+            global maxstick_rot_x = {stick.x}
+            global maxstick_rot_y = {stick.y} * -1
+            global maxstick_rot_z = {stick.rz} * -1
 
+            local rot = eulerAngles maxstick_rot_x maxstick_rot_y maxstick_rot_z
             local tm = obj.transform
-            preTranslate tm [0, 0, accel]
-            preRotate tm (eulerToQuat (eulerAngles rot_x rot_y rot_z))
+            preTranslate tm [maxstick_accel, 0, 0]
+            preRotate tm (eulerToQuat rot)
             obj.transform = tm
 
             slidertime += {t}
