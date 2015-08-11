@@ -4,9 +4,9 @@
         if obj != undefined then (
 
             global maxstick_accel = {stick.z} * -1
-            global maxstick_rot_x = {stick.x}
+            global maxstick_rot_x = {stick.x} * 1.25
             global maxstick_rot_y = {stick.y} * -1
-            global maxstick_rot_z = {stick.rz} * -1
+            global maxstick_rot_z = {stick.rz} * -0.5
 
             local rot = eulerAngles maxstick_rot_x maxstick_rot_y maxstick_rot_z
             local tm = obj.transform
