@@ -27,7 +27,8 @@ Installation
 ------------
 
 To use the script inside 3ds Max easily you can define a simple
-macroscript that you can bind to a toolbar button or hotkey. Edit the following maxscript as needed, then copy and execute it inside 3ds Max::
+macroscript that you can bind to a toolbar button or hotkey. Edit the
+following maxscript as needed, then copy and execute it inside 3ds Max::
 
     macroscript maxstick_joystick_control
     category:"Buelter"
@@ -41,7 +42,9 @@ How to use
 ----------
 
 - Make sure have a joystick connected (with throttle and z-rotation).
-- Select an object in 3ds Max, e.g. a camera.
+- Select an object in 3ds Max, e.g. a camera. Its orientation should be
+correct when you have created it in the top viewport, otherwise you must
+rotate its pivot.
 - Launch the joystick control using the supplied start.ms or the macro.
 
 Button controls::
