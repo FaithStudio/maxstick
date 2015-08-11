@@ -42,9 +42,7 @@ How to use
 ----------
 
 - Make sure have a joystick connected (with throttle and z-rotation).
-- Select an object in 3ds Max, e.g. a camera. Its orientation should be
-correct when you have created it in the top viewport, otherwise you must
-rotate its pivot.
+- Select an object in 3ds Max, e.g. a camera. Its orientation should be correct when you have created it in the top viewport, otherwise you must rotate its pivot.
 - Launch the joystick control using the supplied start.ms or the macro.
 
 Button controls::
